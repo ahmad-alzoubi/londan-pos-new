@@ -11,12 +11,18 @@ import { AnalyticsView } from './views/AnalyticsView';
 import { CustomersView } from './views/CustomersView';
 import { ExpensesView } from './views/ExpensesView';
 import { SettingsView } from './views/SettingsView';
+import { LoginScreen } from './components/auth/LoginScreen';
 import { SuspendedOrdersModal } from './components/pos/SuspendedOrdersModal';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 function AppContent() {
-  const { activeTab, toast } = useApp();
+  const { activeTab, toast, currentUser } = useApp();
   const [isSuspendedModalOpen, setIsSuspendedModalOpen] = useState(false);
+
+  // If user is not logged in, render the login screen
+  if (!currentUser) {
+    return <LoginScreen />;
+  }
 
   const renderActiveView = () => {
     switch (activeTab) {

@@ -14,7 +14,10 @@ import {
   ShieldCheck,
   RotateCcw,
   Sun,
-  Moon
+  Moon,
+  Lock,
+  Key,
+  User
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -22,6 +25,9 @@ import { INITIAL_PRODUCTS, INITIAL_PARTNERS, INITIAL_INVOICES, INITIAL_CUSTOMERS
 
 export const SettingsView = () => {
   const { 
+    currentUser,
+    adminCredentials,
+    updateAdminCredentials,
     theme,
     toggleTheme,
     currency, 
@@ -41,6 +47,27 @@ export const SettingsView = () => {
     customers,
     expenses
   } = useApp();
+
+  // Admin Security Form
+  const [adminName, setAdminName] = useState(adminCredentials?.name || 'مدير النظام');
+  const [adminEmail, setAdminEmail] = useState(adminCredentials?.email || 'admin@londan.com');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminConfirmPassword, setAdminConfirmPassword] = useState('');
+
+  const handleUpdateAdmin = (e) => {
+    e.preventDefault();
+    if (adminPassword && adminPassword !== adminConfirmPassword) {
+      showToast('كلمتا المرور غير متطابقتين!', 'error');
+      return;
+    }
+    updateAdminCredentials(
+      adminEmail,
+      adminPassword || adminCredentials.password,
+      adminName
+    );
+    setAdminPassword('');
+    setAdminConfirmPassword('');
+  };
 
   const [storeName, setStoreName] = useState('بوتيك لندن للأزياء');
   const [storePhone, setStorePhone] = useState('+966 50 123 4567');
@@ -186,6 +213,96 @@ export const SettingsView = () => {
             </div>
           </button>
         </div>
+      </div>
+
+      {/* Admin Account & Security Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>حساب وأمان إدارة النظام (Admin Credentials)</span>
+          </h3>
+          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+            صلاحية المدير العام
+          </span>
+        </div>
+
+        <form onSubmit={handleUpdateAdmin} className="space-y-4">
+          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between text-xs">
+            <div>
+              <span className="text-slate-400 block text-[10px]">البريد / المستخدم الحالي:</span>
+              <span className="font-bold font-mono text-slate-900 dark:text-white">{adminCredentials.email}</span>
+            </div>
+            <div className="text-left">
+              <span className="text-slate-400 block text-[10px]">كلمة المرور الحالية:</span>
+              <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">{adminCredentials.password}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                اسم المدير المعروض
+              </label>
+              <input
+                type="text"
+                required
+                value={adminName}
+                onChange={(e) => setAdminName(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                البريد الإلكتروني / اسم المستخدم الجديد
+              </label>
+              <input
+                type="text"
+                required
+                value={adminEmail}
+                onChange={(e) => setAdminEmail(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                كلمة المرور الجديدة (اتركها فارغة للإبقاء على الحالية)
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                تأكيد كلمة المرور الجديدة
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={adminConfirmPassword}
+                onChange={(e) => setAdminConfirmPassword(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-mono"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5" />
+              <span>تحديث وحفظ بيانات الدخول</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Store Identity & Currency Card */}

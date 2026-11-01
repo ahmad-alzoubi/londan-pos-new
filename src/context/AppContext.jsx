@@ -17,11 +17,39 @@ const AppContext = createContext();
 
 const STORAGE_KEY = 'londan_pos_data_v1';
 const THEME_KEY = 'londan_theme';
+const AUTH_USER_KEY = 'londan_auth_user';
+const ADMIN_CREDENTIALS_KEY = 'londan_admin_creds';
+
+const DEFAULT_ADMIN = {
+  email: 'admin@londan.com',
+  password: 'admin123',
+  name: 'مدير النظام',
+  role: 'admin',
+};
 
 export const AppProvider = ({ children }) => {
   // Theme State
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem(THEME_KEY) || 'dark';
+  });
+
+  // Admin Credentials & Authentication State
+  const [adminCredentials, setAdminCredentials] = useState(() => {
+    try {
+      const saved = localStorage.getItem(ADMIN_CREDENTIALS_KEY);
+      return saved ? JSON.parse(saved) : DEFAULT_ADMIN;
+    } catch {
+      return DEFAULT_ADMIN;
+    }
+  });
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem(AUTH_USER_KEY);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
 
   // Active Navigation Tab
@@ -659,9 +687,80 @@ export const AppProvider = ({ children }) => {
     showToast(`تم تسجيل سداد دفعة بقيمة ${amount} ${currency.symbol}`, 'success');
   };
 
+  // -------------------------------------------------------------
+  // Authentication & Admin Account Management
+  // -------------------------------------------------------------
+  const login = (email, password) => {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPass = password.trim();
+
+    if (
+      (cleanEmail === adminCredentials.email.toLowerCase() || cleanEmail === 'admin') &&
+      cleanPass === adminCredentials.password
+    ) {
+      const user = {
+        email: adminCredentials.email,
+        name: adminCredentials.name,
+        role: 'admin',
+      };
+      setCurrentUser(user);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+      soundFX.playSuccess();
+      showToast(`مرحباً بك، تم تسجيل دخول ${user.name}`, 'success');
+      return { success: true };
+    }
+
+    if (cleanEmail === 'cashier' && cleanPass === '123') {
+      const user = {
+        email: 'cashier@londan.com',
+        name: 'الكاشير 1',
+        role: 'cashier',
+      };
+      setCurrentUser(user);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+      soundFX.playSuccess();
+      showToast('تم تسجيل دخول الكاشير', 'success');
+      return { success: true };
+    }
+
+    soundFX.playError();
+    return { success: false, error: 'بيانات الدخول غير صحيحة، يرجى التحقق من البريد وكلمة المرور' };
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem(AUTH_USER_KEY);
+    showToast('تم تسجيل الخروج بنجاح', 'info');
+  };
+
+  const updateAdminCredentials = (newEmail, newPassword, newName) => {
+    const updated = {
+      ...adminCredentials,
+      email: newEmail.trim() || adminCredentials.email,
+      password: newPassword.trim() || adminCredentials.password,
+      name: newName.trim() || adminCredentials.name,
+    };
+    setAdminCredentials(updated);
+    localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(updated));
+
+    if (currentUser?.role === 'admin') {
+      const updatedUser = { ...currentUser, email: updated.email, name: updated.name };
+      setCurrentUser(updatedUser);
+      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+    }
+
+    soundFX.playSuccess();
+    showToast('تم تحديث بيانات حساب الإدارة بنجاح 🔒', 'success');
+  };
+
   return (
     <AppContext.Provider
       value={{
+        currentUser,
+        adminCredentials,
+        login,
+        logout,
+        updateAdminCredentials,
         theme,
         toggleTheme,
         activeTab,

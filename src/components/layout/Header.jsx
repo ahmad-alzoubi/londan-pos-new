@@ -9,12 +9,16 @@ import {
   PlusCircle, 
   Coins, 
   TrendingUp,
-  RotateCw
+  RotateCw,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const Header = ({ onOpenSuspendedModal }) => {
   const { 
+    currentUser,
+    logout,
     theme, 
     toggleTheme, 
     currency, 
@@ -141,6 +145,22 @@ export const Header = ({ onOpenSuspendedModal }) => {
           <PlusCircle className="w-4 h-4" />
           <span>فاتورة جديدة (F1)</span>
         </button>
+
+        {/* User Info & Logout Button */}
+        {currentUser && (
+          <div className="flex items-center gap-1 pl-1 border-r border-slate-200 dark:border-slate-800 mr-1">
+            <span className="hidden xl:inline text-xs font-bold px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {currentUser.name}
+            </span>
+            <button
+              onClick={logout}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+              title="تسجيل الخروج من النظام"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );
