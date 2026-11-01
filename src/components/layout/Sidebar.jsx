@@ -126,7 +126,7 @@ export const Sidebar = () => {
 
         {/* Mehwar Company Signature */}
         <div className="flex items-center justify-center gap-2 py-1.5 px-2 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-slate-500 dark:text-slate-400 hover:border-emerald-500/40 transition-colors">
-          <img src="/mehwar-logo.svg" alt="شركة محور" className="w-4 h-4 rounded-md shadow-2xs shrink-0" />
+          <img src="./mehwar-logo.svg" alt="شركة محور" className="w-4 h-4 rounded-md shadow-2xs shrink-0" />
           <span className="text-[11px]">
             تنفيذ وتطوير <strong className="text-slate-700 dark:text-slate-200 font-bold">شركة محور</strong>
           </span>

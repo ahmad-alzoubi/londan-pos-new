@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Store, Lock, Mail, ArrowLeft, ShieldCheck, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Store, Lock, Mail, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export const LoginScreen = () => {
-  const { login, adminCredentials } = useApp();
+  const { login } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,12 +22,6 @@ export const LoginScreen = () => {
         setIsLoading(false);
       }
     }, 200);
-  };
-
-  const handleQuickAdminLogin = () => {
-    setEmail(adminCredentials.email);
-    setPassword(adminCredentials.password);
-    login(adminCredentials.email, adminCredentials.password);
   };
 
   return (
@@ -72,7 +66,7 @@ export const LoginScreen = () => {
               <input
                 type="text"
                 required
-                placeholder="admin@londan.com أو admin"
+                placeholder="أدخل اسم المستخدم أو البريد الإلكتروني"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full pl-3 pr-10 py-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500"
@@ -97,7 +91,7 @@ export const LoginScreen = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -114,30 +108,9 @@ export const LoginScreen = () => {
           </button>
         </form>
 
-        {/* Demo Quick Login Box */}
-        <div className="p-3.5 rounded-2xl bg-indigo-950/40 border border-indigo-800/40 text-center space-y-2">
-          <div className="text-[11px] text-indigo-300 font-bold flex items-center justify-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>بيانات حساب الإدارة الافتراضي</span>
-          </div>
-
-          <div className="text-[10px] text-slate-400 font-mono bg-slate-900/60 p-2 rounded-lg border border-slate-800">
-            <div>المستخدم: <strong className="text-indigo-400">{adminCredentials.email}</strong></div>
-            <div>كلمة المرور: <strong className="text-emerald-400">{adminCredentials.password}</strong></div>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleQuickAdminLogin}
-            className="w-full py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-[11px] transition-colors cursor-pointer"
-          >
-            ⚡ دخول تجريبي سريع بحساب الإدارة
-          </button>
-        </div>
-
         {/* Mehwar Branding */}
         <div className="pt-2 border-t border-slate-800 flex items-center justify-center gap-2 text-slate-500 text-[11px]">
-          <img src="/mehwar-logo.svg" alt="شركة محور" className="w-4 h-4 rounded-md" />
+          <img src="./mehwar-logo.svg" alt="شركة محور" className="w-4 h-4 rounded-md" />
           <span>تنفيذ وتطوير <strong>شركة محور</strong></span>
         </div>
       </div>

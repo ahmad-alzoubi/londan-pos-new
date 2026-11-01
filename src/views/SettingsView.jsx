@@ -476,7 +476,7 @@ export const SettingsView = () => {
       {/* Mehwar Company Official Footer Signature */}
       <div className="p-4 rounded-3xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <img src="/mehwar-logo.svg" alt="شركة محور" className="w-8 h-8 rounded-xl shadow-xs shrink-0" />
+          <img src="./mehwar-logo.svg" alt="شركة محور" className="w-8 h-8 rounded-xl shadow-xs shrink-0" />
           <div>
             <div className="text-xs font-bold text-slate-900 dark:text-white">
               تنفيذ وتطوير شركة محور (Mehwar)

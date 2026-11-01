@@ -147,7 +147,7 @@ export const ThermalReceiptView = ({ invoice, isOpen, onClose }) => {
                 سعدنا بزيارتكم في بوتيك لندن!
               </p>
               <div className="pt-2 text-[8px] text-gray-500 font-sans flex items-center justify-center gap-1 border-t border-dotted border-gray-300 mt-2">
-                <img src="/mehwar-logo.svg" alt="محور" className="w-2.5 h-2.5" />
+                <img src="./mehwar-logo.svg" alt="محور" className="w-2.5 h-2.5" />
                 <span>برمجة وتطوير شركة محور</span>
               </div>
             </div>
