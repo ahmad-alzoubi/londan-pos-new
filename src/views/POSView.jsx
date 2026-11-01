@@ -105,6 +105,13 @@ export const POSView = () => {
     }
   };
 
+  // Reset selected category if it was deleted
+  useEffect(() => {
+    if (selectedCategory !== 'الكل' && !categories.includes(selectedCategory)) {
+      setSelectedCategory('الكل');
+    }
+  }, [categories, selectedCategory]);
+
   // Filter Products
   const filteredProducts = products.filter((p) => {
     const matchesCat = selectedCategory === 'الكل' || p.category === selectedCategory;

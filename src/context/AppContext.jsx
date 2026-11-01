@@ -619,6 +619,115 @@ export const AppProvider = ({ children }) => {
   }, [invoices, expenses, partners]);
 
   // -------------------------------------------------------------
+  // Categories Management (إضافة، تعديل، حذف الأقسام)
+  // -------------------------------------------------------------
+  const addCategory = (categoryName) => {
+    const trimmed = (categoryName || '').trim();
+    if (!trimmed) {
+      soundFX.playError();
+      showToast('يرجى إدخال اسم القسم', 'error');
+      return { success: false, error: 'اسم القسم فارغ' };
+    }
+
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      soundFX.playError();
+      showToast('هذا القسم موجود بالفعل', 'error');
+      return { success: false, error: 'القسم موجود بالفعل' };
+    }
+
+    setCategories((prev) => [...prev, trimmed]);
+    soundFX.playSuccess();
+    showToast(`تمت إضافة قسم "${trimmed}" بنجاح`, 'success');
+    return { success: true, category: trimmed };
+  };
+
+  const updateCategory = (oldName, newName) => {
+    const trimmedOld = (oldName || '').trim();
+    const trimmedNew = (newName || '').trim();
+
+    if (trimmedOld === 'الكل') {
+      soundFX.playError();
+      showToast('لا يمكن تعديل قسم "الكل" الافتراضي', 'error');
+      return { success: false, error: 'لا يمكن تعديل قسم الكل' };
+    }
+
+    if (!trimmedNew) {
+      soundFX.playError();
+      showToast('اسم القسم الجديد لا يمكن أن يكون فارغاً', 'error');
+      return { success: false, error: 'اسم القسم الجديد فارغ' };
+    }
+
+    if (
+      trimmedOld.toLowerCase() !== trimmedNew.toLowerCase() &&
+      categories.some((c) => c.toLowerCase() === trimmedNew.toLowerCase())
+    ) {
+      soundFX.playError();
+      showToast('يوجد قسم آخر بنفس هذا الاسم بالفعل', 'error');
+      return { success: false, error: 'الاسم مكرر' };
+    }
+
+    // 1. Update categories list
+    setCategories((prev) =>
+      prev.map((c) => (c === trimmedOld ? trimmedNew : c))
+    );
+
+    // 2. Cascade rename into all products
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.category === trimmedOld ? { ...p, category: trimmedNew } : p
+      )
+    );
+
+    soundFX.playSuccess();
+    showToast(`تم تعديل القسم من "${trimmedOld}" إلى "${trimmedNew}"`, 'success');
+    return { success: true };
+  };
+
+  const deleteCategory = (categoryName, fallbackCategory = '') => {
+    const trimmed = (categoryName || '').trim();
+
+    if (trimmed === 'الكل') {
+      soundFX.playError();
+      showToast('لا يمكن حذف قسم "الكل" الافتراضي', 'error');
+      return { success: false, error: 'لا يمكن حذف قسم الكل' };
+    }
+
+    const nonAllCategories = categories.filter((c) => c !== 'الكل');
+    if (nonAllCategories.length <= 1) {
+      soundFX.playError();
+      showToast('يجب أن يبقى قسم واحد على الأقل في النظام', 'error');
+      return { success: false, error: 'يجب أن يبقى قسم واحد على الأقل' };
+    }
+
+    const targetFallback =
+      fallbackCategory && fallbackCategory !== trimmed
+        ? fallbackCategory
+        : nonAllCategories.find((c) => c !== trimmed) || 'أزياء عامة';
+
+    let affectedCount = 0;
+    setProducts((prev) =>
+      prev.map((p) => {
+        if (p.category === trimmed) {
+          affectedCount++;
+          return { ...p, category: targetFallback };
+        }
+        return p;
+      })
+    );
+
+    setCategories((prev) => prev.filter((c) => c !== trimmed));
+
+    soundFX.playSuccess();
+    showToast(
+      `تم حذف قسم "${trimmed}" بنجاح ${
+        affectedCount > 0 ? `(تم نقل ${affectedCount} منتج إلى قسم "${targetFallback}")` : ''
+      }`,
+      'info'
+    );
+    return { success: true };
+  };
+
+  // -------------------------------------------------------------
   // Inventory CRUD
   // -------------------------------------------------------------
   const addProduct = (prodData) => {
@@ -807,6 +916,10 @@ export const AppProvider = ({ children }) => {
         updatePartner,
         deletePartner,
         recordPartnerWithdrawal,
+        // Categories Actions
+        addCategory,
+        updateCategory,
+        deleteCategory,
         // Products Actions
         addProduct,
         updateProduct,
