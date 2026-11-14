@@ -2,9 +2,21 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./app-icon.svg" />
+    <link rel="manifest" href="./manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>لندن للأزياء | London Fashion POS & Accounting</title>
+    <title>بوتيك لندن للأزياء | نظام الكاشير والمحاسبة</title>
+    
+    <!-- PWA & Windows App Meta -->
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="بوتيك لندن" />
+    <meta name="application-name" content="بوتيك لندن للأزياء" />
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    <meta name="description" content="نظام الكاشير والمحاسبة الذكي لبوتيك لندن للأزياء - يعمل بدون إنترنت على أجهزة الكمبيوتر وويندوز" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,5 +38,19 @@
   <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Register Service Worker for 100% Offline Capability
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('./sw.js')
+            .then(function(reg) {
+              console.log('Londan POS Service Worker active:', reg.scope);
+            })
+            .catch(function(err) {
+              console.warn('Service Worker registration skipped:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

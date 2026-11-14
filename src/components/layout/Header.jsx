@@ -11,7 +11,11 @@ import {
   TrendingUp,
   RotateCw,
   LogOut,
-  UserCheck
+  UserCheck,
+  Wifi,
+  WifiOff,
+  Download,
+  Laptop
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
@@ -30,7 +34,10 @@ export const Header = ({ onOpenSuspendedModal }) => {
     isSyncing, 
     syncWithSupabase, 
     lastSyncTime,
-    setActiveTab
+    setActiveTab,
+    isOnline,
+    isInstalledApp,
+    installPWA
   } = useApp();
 
   // Calculate today's sales
@@ -62,7 +69,31 @@ export const Header = ({ onOpenSuspendedModal }) => {
       </div>
 
       {/* Quick Status / Metrics Strip */}
-      <div className="hidden lg:flex items-center gap-4">
+      <div className="hidden lg:flex items-center gap-3">
+        {/* Network Offline / Online Indicator */}
+        <div 
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-colors select-none ${
+            isOnline
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400'
+              : 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
+          }`}
+          title={isOnline ? 'النظام متصل بالإنترنت ومحمي بنسخ احتياطي محلي كامل' : 'يعمل الآن بدون إنترنت - جميع العمليات والمبيعات محفوظة محلياً'}
+        >
+          {isOnline ? (
+            <>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <Wifi className="w-3.5 h-3.5" />
+              <span>أونلاين</span>
+            </>
+          ) : (
+            <>
+              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+              <WifiOff className="w-3.5 h-3.5" />
+              <span>أوفلاين (بدون نت)</span>
+            </>
+          )}
+        </div>
+
         {/* Today's Sales Badge */}
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-emerald-700 dark:text-emerald-400">
           <TrendingUp className="w-4 h-4" />
@@ -84,6 +115,17 @@ export const Header = ({ onOpenSuspendedModal }) => {
 
       {/* Right Controls & Quick Actions */}
       <div className="flex items-center gap-2.5">
+        {/* Windows / Desktop App Install Button (if not already installed) */}
+        {!isInstalledApp && (
+          <button
+            onClick={installPWA}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-indigo-600/10 to-indigo-700/15 hover:from-indigo-600/20 hover:to-indigo-700/25 border border-indigo-300 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+            title="تثبيت النظام كتطبيق على جهاز الكمبيوتر / ويندوز ليعمل بدون متصفح وبدون إنترنت"
+          >
+            <Laptop className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="hidden sm:inline">تثبيت لويندوز</span>
+          </button>
+        )}
         {/* Suspended Orders Pill */}
         <button
           onClick={onOpenSuspendedModal}

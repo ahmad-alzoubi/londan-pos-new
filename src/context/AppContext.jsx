@@ -86,6 +86,70 @@ export const AppProvider = ({ children }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
 
+  // Network Offline / Online State
+  const [isOnline, setIsOnline] = useState(() => (typeof navigator !== 'undefined' ? navigator.onLine : true));
+
+  // PWA & Desktop Install Prompt State
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isInstalledApp, setIsInstalledApp] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  });
+
+  // Track Network Changes
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      showToast('تمت استعادة الاتصال بالإنترنت 🟢', 'success');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      showToast('أنت تعمل الآن بدون إنترنت (أوفلاين) 🟡 - جميع البيانات وفواتير الكاشير تُحفظ محلياً', 'info');
+    };
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Listen for PWA Install Prompt (Windows / Desktop / Android)
+  useEffect(() => {
+    const handlePrompt = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    const handleAppInstalled = () => {
+      setIsInstalledApp(true);
+      setInstallPrompt(null);
+      showToast('تم تثبيت تطبيق بوتيك لندن للأزياء على جهازك بنجاح! 🎉', 'success');
+    };
+
+    window.addEventListener('beforeinstallprompt', handlePrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handlePrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
+  }, []);
+
+  const installPWA = async () => {
+    if (!installPrompt) {
+      showToast('لتثبيت التطبيق على ويندوز: اضغط على أيقونة (⊕ تثبيت) في شريط عنوان متصفحك (Chrome أو Edge)', 'info');
+      return;
+    }
+    try {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setInstallPrompt(null);
+      }
+    } catch (e) {
+      console.warn('Install error:', e);
+    }
+  };
+
   // Apply Theme to DOM
   useEffect(() => {
     const root = document.documentElement;
@@ -929,6 +993,11 @@ export const AppProvider = ({ children }) => {
         deleteExpense,
         addCustomer,
         settleCustomerDebt,
+        // Offline & Desktop App
+        isOnline,
+        installPrompt,
+        isInstalledApp,
+        installPWA,
         // Sync & UI
         syncWithSupabase,
         isSyncing,

@@ -17,7 +17,12 @@ import {
   Moon,
   Lock,
   Key,
-  User
+  User,
+  Laptop,
+  Wifi,
+  WifiOff,
+  CheckCircle2,
+  HardDrive
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -45,7 +50,10 @@ export const SettingsView = () => {
     partners,
     invoices,
     customers,
-    expenses
+    expenses,
+    isOnline,
+    isInstalledApp,
+    installPWA
   } = useApp();
 
   // Admin Security Form
@@ -396,6 +404,95 @@ export const SettingsView = () => {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Offline Mode & Windows Desktop App Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-xs">
+        <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Laptop className="w-4 h-4 text-indigo-500" />
+            <span>التشغيل بدون إنترنت والتثبيت على ويندوز (Offline & Desktop App)</span>
+          </div>
+          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>يعمل 100% أوفلاين</span>
+          </span>
+        </h3>
+
+        {/* Status Indicators */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">العمل بدون إنترنت</span>
+              <HardDrive className="w-4 h-4 text-emerald-500" />
+            </div>
+            <div className="text-xs font-bold text-slate-800 dark:text-slate-100">
+              مفعل ومخزن محلياً (Offline First)
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">حالة الشبكة الحالية</span>
+              {isOnline ? (
+                <Wifi className="w-4 h-4 text-emerald-500" />
+              ) : (
+                <WifiOff className="w-4 h-4 text-amber-500" />
+              )}
+            </div>
+            <div className={`text-xs font-bold ${isOnline ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+              {isOnline ? 'متصل بالإنترنت (Online)' : 'يعمل بدون إنترنت (Offline)'}
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">تطبيق سطح المكتب</span>
+              <Laptop className="w-4 h-4 text-indigo-500" />
+            </div>
+            <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+              {isInstalledApp ? 'تم التثبيت كتطبيق مستقل' : 'جاهز للتثبيت بنقرة واحدة'}
+            </div>
+          </div>
+        </div>
+
+        {/* Windows Installation Action Banner */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-indigo-100/60 dark:from-indigo-950/40 dark:to-slate-800/80 border border-indigo-200 dark:border-indigo-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h4 className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+              <span>تثبيت البرنامج كتطبيق على جهازك (Windows / PC)</span>
+            </h4>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+              ينزل التطبيق كأيقونة مستقلة على سطح المكتب وقائمة Start، يفتح بنافذة خاصة بدون شريط المتصفح، ويشتغل بشكل فوري بدون نت.
+            </p>
+          </div>
+
+          <button
+            onClick={installPWA}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white text-xs font-bold shadow-md shadow-indigo-600/25 transition-all cursor-pointer shrink-0"
+          >
+            <Download className="w-4 h-4" />
+            <span>تثبيت التطبيق على الويندوز</span>
+          </button>
+        </div>
+
+        {/* Quick Instructions */}
+        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-2">
+          <div className="font-bold text-slate-800 dark:text-slate-200">
+            📌 طرق تشغيل واستخدام البرنامج على أجهزة الكاشير والويندوز:
+          </div>
+          <ul className="list-disc list-inside space-y-1 text-[11px] leading-relaxed pr-1">
+            <li>
+              <strong>الطريقة الأولى (التثبيت الفوري 1-Click PWA)</strong>: افتح الرابط في متصفح Chrome أو Edge على جهاز الويندوز، ثم اضغط على زر <strong>"تثبيت التطبيق على الويندوز"</strong> أو علامة (⊕) في شريط المتصفح لتثبيت التطبيق فوراً كبرنامج سطح مكتب.
+            </li>
+            <li>
+              <strong>الطريقة الثانية (العمل بدون نت نهائياً)</strong>: بعد فتح البرنامج لأول مرة، يمكنك فصل كابل الإنترنت أو إيقاف الواي فاي بالكامل؛ حيث يقوم محرك (Service Worker) بتخزين كافة ملفات النظام والفواتير محلياً.
+            </li>
+            <li>
+              <strong>الطريقة الثالثة (ملف تنفيذي .exe عبر Electron)</strong>: النظام مجهز بالكامل بملفات حزمة سطح المكتب <code>electron/main.cjs</code> ويمكن بناء ملف <code>.exe</code> مباشر للتثبيت على أي جهاز عبر أمر <code>npm run dist:win</code>.
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Cloud Sync & Supabase */}

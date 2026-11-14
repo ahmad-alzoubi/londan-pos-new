@@ -1,0 +1,28 @@
+{
+  "name": "بوتيك لندن للأزياء - نظام الكاشير والمحاسبة",
+  "short_name": "بوتيك لندن",
+  "description": "برنامج الكاشير والمحاسبة الذكي لبوتيك لندن للأزياء - يعمل بدون إنترنت ومخصص لأجهزة الكمبيوتر وويندوز",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["business", "finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./mehwar-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
