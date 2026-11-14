@@ -16,6 +16,7 @@
   "build": {
     "appId": "com.mehwar.londanpos",
     "productName": "بوتيك لندن للأزياء",
+    "artifactName": "Londan-POS-Setup-${version}.${ext}",
     "directories": {
       "output": "release"
     },
@@ -26,7 +27,6 @@
     ],
     "win": {
       "target": [
-        "portable",
         "nsis"
       ],
       "icon": "public/app-icon.png"
